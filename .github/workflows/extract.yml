@@ -1,0 +1,26 @@
+name: Extract project archive
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Unzip and move to root
+        run: |
+          ls -la
+          unzip -o quantumshield-x.zip -d extracted
+          ls -la extracted
+          if [ -f extracted/render.yaml ]; then cp -a extracted/. .; elif [ -d extracted/quantumshield-x ] && [ -f extracted/quantumshield-x/render.yaml ]; then cp -a extracted/quantumshield-x/. .; else echo "render.yaml not found at expected locations"; find extracted -maxdepth 3 -type f | head -100; exit 1; fi
+          rm -rf extracted quantumshield-x.zip
+          ls -la
+      - name: Commit extracted files
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add -A
+          git status --short
+          git commit -m "Extract QUANTUMSHIELD X project files" || echo "nothing to commit"
+          git push
