@@ -1,0 +1,51 @@
+# Optional production path. NOT required for the laptop demo
+# (SQLite + npm run dev is enough there). Docker is not installed on the
+# demo machine, so this file is documentation for a deployment host.
+#
+# Usage on a host with Docker:
+#   cp .env.example .env   # then set QS_SECRET_KEY + DATABASE_URL
+#   docker compose up --build
+#
+# Services: PostgreSQL (data), backend (FastAPI on :8000), frontend (static
+# build served by nginx on :80). The backend waits for a healthy database.
+
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: qs_user
+      POSTGRES_PASSWORD: qs_password
+      POSTGRES_DB: quantumshield
+    volumes:
+      - qs_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U qs_user"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: postgresql+psycopg2://qs_user:qs_password@db:5432/quantumshield
+      QS_SECRET_KEY: ${QS_SECRET_KEY:?Set QS_SECRET_KEY in .env}
+      FRONTEND_ORIGIN: http://localhost
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+volumes:
+  qs_data:

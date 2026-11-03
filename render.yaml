@@ -1,0 +1,56 @@
+# Render Blueprint for QUANTUMSHIELD X.
+# Dashboard -> New -> Blueprint -> select this repo -> Apply.
+# This creates three things, already wired together:
+#   quantumshield-backend  (Docker web service, FastAPI + liboqs)
+#   quantumshield-frontend (static site, Vite/React build)
+#   quantumshield-db       (free PostgreSQL database)
+#
+# Notes (read before you press Apply):
+# - The backend's FIRST build compiles the liboqs C library from source
+#   and takes 10-20 minutes. Do not cancel or redeploy while it builds.
+# - Free web services sleep after inactivity: the first open after a
+#   while can take about a minute (cold start).
+# - Render's free PostgreSQL expires after 30 days. That is fine for a
+#   demo; for longer use, move to a paid plan or re-create it.
+# - Uploaded file blobs live on the backend's ephemeral disk and can
+#   disappear on redeploy. Acceptable for a demo.
+# - After Apply, one manual step remains: the SPA rewrite rule for the
+#   frontend (see DEPLOY_GUIDE.md Step 4). Without it, refreshing a
+#   page like /dashboard returns 404.
+# If the frontend ever shows "backend unreachable", see DEPLOY_GUIDE.md
+# (manual VITE_API_URL / FRONTEND_ORIGIN fallback).
+
+services:
+  - type: web
+    name: quantumshield-backend
+    runtime: docker
+    plan: free
+    dockerfilePath: backend/Dockerfile
+    dockerContext: backend
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: quantumshield-db
+          property: connectionString
+      - key: QS_SECRET_KEY
+        generateValue: true
+      - key: FRONTEND_ORIGIN
+        fromService:
+          name: quantumshield-frontend
+          property: host
+
+  - type: static
+    name: quantumshield-frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    rootDir: frontend
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          name: quantumshield-backend
+          property: host
+
+databases:
+  - name: quantumshield-db
+    plan: free

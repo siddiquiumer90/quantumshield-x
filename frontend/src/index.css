@@ -1,0 +1,88 @@
+@import "tailwindcss";
+
+body {
+  background-color: #030712;
+  color: #e5e7eb;
+  font-family: ui-sans-system, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+.glass {
+  background: linear-gradient(160deg, rgba(30, 58, 138, 0.28), rgba(8, 47, 73, 0.18));
+  border: 1px solid rgba(56, 189, 248, 0.18);
+  backdrop-filter: blur(12px);
+  border-radius: 1rem;
+}
+
+.input {
+  width: 100%;
+  background: rgba(3, 7, 18, 0.8);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: 0.5rem;
+  padding: 0.55rem 0.75rem;
+  font-size: 0.9rem;
+  color: #e5e7eb;
+  outline: none;
+}
+.input:focus { border-color: #38bdf8; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(90deg, #0284c7, #7c3aed);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 0.55rem 1.1rem;
+  border-radius: 0.6rem;
+  border: none;
+  cursor: pointer;
+}
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-secondary {
+  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  color: #bae6fd;
+}
+
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  word-break: break-all;
+  font-size: 0.78rem;
+}
+
+.label {
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #7dd3fc;
+  margin-bottom: 0.25rem;
+  display: block;
+}
+
+.warn {
+  border: 1px solid rgba(251, 191, 36, 0.5);
+  background: rgba(251, 191, 36, 0.08);
+  color: #fde68a;
+  border-radius: 0.6rem;
+  padding: 0.6rem 0.8rem;
+  font-size: 0.85rem;
+}
+
+.err {
+  border: 1px solid rgba(248, 113, 113, 0.5);
+  background: rgba(248, 113, 113, 0.1);
+  color: #fecaca;
+  border-radius: 0.6rem;
+  padding: 0.6rem 0.8rem;
+  font-size: 0.85rem;
+}
+
+.ok {
+  border: 1px solid rgba(52, 211, 153, 0.5);
+  background: rgba(52, 211, 153, 0.1);
+  color: #a7f3d0;
+  border-radius: 0.6rem;
+  padding: 0.6rem 0.8rem;
+  font-size: 0.85rem;
+}
